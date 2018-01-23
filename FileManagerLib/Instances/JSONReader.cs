@@ -14,14 +14,16 @@ namespace FileManagerLib.Instances
     public class JSONReader : IReader, ICryptoReader
     {
         private IEncryptor _encryptor;
+        private IRoleProvider _roleProvider;
 
         /// <summary>
         /// Constructor to enable DI
         /// </summary>
         /// <param name="encryptor">cryptographer selected</param>
-        public JSONReader(IEncryptor encryptor)
+        public JSONReader(IEncryptor encryptor, IRoleProvider roleProvider)
         {
             this._encryptor = encryptor;
+            this._roleProvider = roleProvider;
         }
 
         /// <summary>
@@ -37,11 +39,16 @@ namespace FileManagerLib.Instances
             // Check correct path
             if (File.Exists(filePath) && (filePath.EndsWith(".json")))
             {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                // Check if the user can read json files
+                if (_roleProvider.CanReadJSONFile(filePath))
                 {
-                    using (StreamReader streanReader = new StreamReader(fileStream))
+
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                     {
-                        return streanReader.ReadToEnd();
+                        using (StreamReader streanReader = new StreamReader(fileStream))
+                        {
+                            return streanReader.ReadToEnd();
+                        }
                     }
                 }   
             }
@@ -63,13 +70,17 @@ namespace FileManagerLib.Instances
             // Check correct path
             if (File.Exists(filePath) && (filePath.EndsWith(".json")))
             {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                // Check if the user can read json files
+                if (_roleProvider.CanReadJSONFile(filePath))
                 {
-                    using (StreamReader streanReader = new StreamReader(fileStream))
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                     {
-                        // if not encrypted, just read the file
-                        // in other case, use the decryptor
-                        return (!encryptedText ? streanReader.ReadToEnd() : _encryptor.Decrypt(streanReader.ReadToEnd()));
+                        using (StreamReader streanReader = new StreamReader(fileStream))
+                        {
+                            // if not encrypted, just read the file
+                            // in other case, use the decryptor
+                            return (!encryptedText ? streanReader.ReadToEnd() : _encryptor.Decrypt(streanReader.ReadToEnd()));
+                        }
                     }
                 }
             }

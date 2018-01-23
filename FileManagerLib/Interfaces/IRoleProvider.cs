@@ -24,5 +24,12 @@ namespace FileManagerLib.Interfaces
         /// <param name="filePath">path to the file</param>
         /// <returns>true if the user can read TEXT file, false in other case</returns>
         bool CanReadTextFile(string filePath);
+
+        /// <summary>
+        /// Validate if the user can read JSON files
+        /// </summary>
+        /// <param name="filePath">path to the file</param>
+        /// <returns>true if the user can read JSON file, false in other case</returns>
+        bool CanReadJSONFile(string filePath);
     }
 }
