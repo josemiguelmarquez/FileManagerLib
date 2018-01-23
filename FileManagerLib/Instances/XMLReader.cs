@@ -14,6 +14,17 @@ namespace FileManagerLib.Instances
     /// </summary
     public class XMLReader : IReader
     {
+        private IRoleProvider _roleProvider;
+
+        /// <summary>
+        /// Constructor that enables DI
+        /// </summary>
+        /// <param name="roleProvider">Role provider selected</param>
+        public XMLReader(IRoleProvider roleProvider)
+        {
+            this._roleProvider = roleProvider;
+        }
+
         public string Read(string filePath)
         {
             string result = string.Empty;
@@ -21,26 +32,30 @@ namespace FileManagerLib.Instances
             // Check correct path
             if (File.Exists(filePath) && (filePath.EndsWith(".xml")))
             {
-                using (XmlTextReader reader = new XmlTextReader(filePath))
+                // Role base security for the XML reading logic
+                if (_roleProvider.CanReadXMLFile(filePath))
                 {
-                    while (reader.Read())
+                    using (XmlTextReader reader = new XmlTextReader(filePath))
                     {
-                        switch (reader.NodeType)
+                        while (reader.Read())
                         {
-                            case XmlNodeType.Element: // The node is an element.
-                                result += ("<" + reader.Name);
-                                result += (">");
-                                break;
-                            case XmlNodeType.Text: //Display the text in each element.
-                                result += (reader.Value);
-                                break;
-                            case XmlNodeType.EndElement: //Display the end of the element.
-                                result += ("</" + reader.Name);
-                                result += (">");
-                                break;
+                            switch (reader.NodeType)
+                            {
+                                case XmlNodeType.Element: // The node is an element.
+                                    result += ("<" + reader.Name);
+                                    result += (">");
+                                    break;
+                                case XmlNodeType.Text: //Display the text in each element.
+                                    result += (reader.Value);
+                                    break;
+                                case XmlNodeType.EndElement: //Display the end of the element.
+                                    result += ("</" + reader.Name);
+                                    result += (">");
+                                    break;
+                            }
                         }
                     }
-                }       
+                }                
             }
 
             return result;
