@@ -14,11 +14,6 @@ namespace FileManagerLib.Instances
     /// </summary
     public class XMLReader : IReader
     {
-        /// <summary>
-        /// Read XML file
-        /// </summary>
-        /// <param name="filePath">path to the xml file</param>
-        /// <returns>XML file content as a string</returns>
         public string Read(string filePath)
         {
             string result = string.Empty;

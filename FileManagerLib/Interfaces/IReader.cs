@@ -15,7 +15,7 @@ namespace FileManagerLib.Interfaces
         /// Read a plain TXT file
         /// </summary>
         /// <param name="filePath">path to the file</param>
-        /// <returns>the content of the file</returns>
+        /// <returns>returns the text of the file</returns>
         string Read(string filePath);
     }
 }
