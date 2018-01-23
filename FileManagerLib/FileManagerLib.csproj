@@ -46,6 +46,7 @@
     <Compile Include="Interfaces\ICryptoReader.cs" />
     <Compile Include="Interfaces\IEncryptor.cs" />
     <Compile Include="Interfaces\IReader.cs" />
+    <Compile Include="Interfaces\IRoleProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

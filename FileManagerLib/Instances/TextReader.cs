@@ -14,14 +14,17 @@ namespace FileManagerLib.Instances
     public class TextReader : IReader, ICryptoReader
     {
         private IEncryptor _encryptor;
+        private IRoleProvider _roleProvider;
 
         /// <summary>
         /// Constructor to provide DI to the class
         /// </summary>
         /// <param name="encryptor">The encryptor selected</param>
-        public TextReader(IEncryptor encryptor)
+        /// /// <param name="roleProvider">The role provider selected</param>
+        public TextReader(IEncryptor encryptor, IRoleProvider roleProvider)
         {
-            _encryptor = encryptor;
+            this._encryptor = encryptor;
+            this._roleProvider = roleProvider;
         }
 
         public string Read(string filePath)
@@ -29,11 +32,15 @@ namespace FileManagerLib.Instances
             // Check correct path
             if (File.Exists(filePath) && (filePath.EndsWith(".txt")))
             {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                // Check if the user can read txt files
+                if (_roleProvider.CanReadTextFile(filePath))
                 {
-                    using (StreamReader streanReader = new StreamReader(fileStream))
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                     {
-                        return streanReader.ReadToEnd();
+                        using (StreamReader streanReader = new StreamReader(fileStream))
+                        {
+                            return streanReader.ReadToEnd();
+                        }
                     }
                 }
             }
@@ -46,14 +53,18 @@ namespace FileManagerLib.Instances
             // Check correct path
             if (File.Exists(filePath) && (filePath.EndsWith(".txt")))
             {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                // Check if the user can read txt files
+                if (_roleProvider.CanReadTextFile(filePath))
                 {
-                    using (StreamReader streanReader = new StreamReader(fileStream))
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                     {
-                        // if not encrypted, just read the file
-                        // in other case, use the decryptor
-                        return (!encryptedText ? streanReader.ReadToEnd() : _encryptor.Decrypt(streanReader.ReadToEnd()));
+                        using (StreamReader streanReader = new StreamReader(fileStream))
+                        {
+                            // if not encrypted, just read the file
+                            // in other case, use the decryptor
+                            return (!encryptedText ? streanReader.ReadToEnd() : _encryptor.Decrypt(streanReader.ReadToEnd()));
 
+                        }
                     }
                 }
             }
