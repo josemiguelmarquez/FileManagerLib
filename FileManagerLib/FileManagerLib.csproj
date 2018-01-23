@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Instances\TextReader.cs" />
+    <Compile Include="Instances\XMLReader.cs" />
     <Compile Include="Interfaces\IReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
