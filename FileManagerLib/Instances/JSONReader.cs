@@ -11,8 +11,19 @@ namespace FileManagerLib.Instances
     /// <summary>
     /// Instance of the reader to read JSON files
     /// </summary>
-    public class JSONReader : IReader
+    public class JSONReader : IReader, ICryptoReader
     {
+        private IEncryptor _encryptor;
+
+        /// <summary>
+        /// Constructor to enable DI
+        /// </summary>
+        /// <param name="encryptor">cryptographer selected</param>
+        public JSONReader(IEncryptor encryptor)
+        {
+            this._encryptor = encryptor;
+        }
+
         /// <summary>
         /// For the Read method of the JSON files we will implement the same logic as the 
         /// TEXT file since the scope does not say anything regarding the json objects itself.
@@ -33,6 +44,34 @@ namespace FileManagerLib.Instances
                         return streanReader.ReadToEnd();
                     }
                 }   
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// For the Read method of the encrypted JSON files we will implement the same logic as the 
+        /// TEXT file since the scope does not say anything regarding the json objects itself.
+        /// If we want to parse and use the JSON object in the .NET environment I suggest
+        /// to include the NewtonSoft library
+        /// </summary>
+        /// <param name="filePath">path to the file</param>
+        /// <param name="encryptedText">flag that indicates if the file is encrypted</param>
+        /// <returns>the decrypted JSON file</returns>
+        public string Read(string filePath, bool encryptedText)
+        {
+            // Check correct path
+            if (File.Exists(filePath) && (filePath.EndsWith(".json")))
+            {
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (StreamReader streanReader = new StreamReader(fileStream))
+                    {
+                        // if not encrypted, just read the file
+                        // in other case, use the decryptor
+                        return (!encryptedText ? streanReader.ReadToEnd() : _encryptor.Decrypt(streanReader.ReadToEnd()));
+                    }
+                }
             }
 
             return string.Empty;
